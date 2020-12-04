@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="ytplayer-pkg-DANGO", # Replace with your own username
+    name="ytplayer-pkg", # Replace with your own username
     version="0.0.1",
     author="Mr Dango",
     author_email="danglephd@gmail.com",
