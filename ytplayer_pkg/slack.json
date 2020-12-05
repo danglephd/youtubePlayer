@@ -1,0 +1,70 @@
+{
+    "client_msg_id": "7b6978ce-e2bf-43c8-8ed1-984908e6f92c",
+    "type": "app_mention",
+    "text": "<@U01FYE43YHL> hi",
+    "user": "U01CCQ4BXMK",
+    "ts": "1607137381.002500",
+    "team": "T01C958AAT0",
+    "blocks": [
+        {
+            "type": "rich_text",
+            "block_id": "VjWEP",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [
+                        {
+                            "type": "user",
+                            "user_id": "U01FYE43YHL"
+                        },
+                        {
+                            "type": "text",
+                            "text": " hi"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "channel": "C01CG3EC0AF",
+    "event_ts": "1607137381.002500"
+}
+
+def slackSend():
+    slack.post(text="Robert DeSoto added a new task",
+        attachments = [{
+            "fallback": "Plan a vacation",
+            "author_name": "Owner: rdesoto",
+            "title": "Plan a vacation",
+            "text": "I've been working too hard, it's time for a break.",
+            "actions": [
+                {
+                    "name": "action",
+                    "type": "button",
+                    "text": "Complete this task",
+                    "style": "",
+                    "value": "complete"
+                },
+                {
+                    "name": "tags_list",
+                    "type": "select",
+                    "text": "Add a tag...",
+                    "data_source": "static",
+                    "options": [
+                        {
+                            "text": "Launch Blocking",
+                            "value": "launch-blocking"
+                        },
+                        {
+                            "text": "Enhancement",
+                            "value": "enhancement"
+                        },
+                        {
+                            "text": "Bug",
+                            "value": "bug"
+                        }
+                    ]
+                }
+            ]
+        }]
+    )
