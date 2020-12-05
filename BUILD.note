@@ -1,0 +1,37 @@
+Build and Install
+- When you want to deploy your application elsewhere, you build a distribution file. The current standard for Python distribution is the wheel format, with the .whl extension. Make sure the wheel library is installed first:
+	$ pip install wheel
+- Make setup.py
+- Run setup.py
+	$ python setup.py bdist_wheel
+- Setup new virtualenv:
+	+ Create an environment
+		. Create a project folder and a venv folder within:
+			$ py -3 -m venv venv
+		. Activate the environment
+			venv\Scripts\activate
+	+ Install Flask, within the activated environment
+		$ pip install Flask
+- Copy *.whl file to production pc
+- Install by:
+	$ pip install flaskr-1.0.0-py3-none-any.whl
+- export FLASK_APP:
+	$env:FLASK_APP="ytplayer_pkg"
+	
+To deploy Python application
+- Install python
+- Use Waitress, first install it in the virtual environment:
+	$ pip install waitress
+
+- You need to tell Waitress about your application, but it doesn’t use FLASK_APP like flask run does. You need to tell it to import and call the application factory to get an application object.
+	$ waitress-serve --call 'ytplayer_pkg:create_app'
+	
+	
+	error: No module named 'vlc'
+	$ pip install python-vlc
+	
+	error: No module named 'pafy'
+	$ pip install pafy
+	
+	error: youtube-dl not found
+	$ pip install youtube_dl
