@@ -73,7 +73,7 @@ def create_app():
             if "hi" in message.get('text'):
                 res_message = "Hi <@{}>! How do you feel today?".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
-            else 
+            else:
                 res_message = "Pardon, I don't understand you."
                 send_survey(message["user"], message["channel"], res_message)
     # ------------------------------------------------------------------------------
@@ -103,6 +103,21 @@ def create_app():
     def play():
         player.play()
         return "<h1 style='color:blue'>Play!</h1>"
+
+    @app.route("/pause", methods=['POST'])
+    def pause():
+        player.pause()
+        return "<h1 style='color:red'>Pause!</h1>"
+
+    @app.route("/next", methods=['POST'])
+    def next():
+        inx_begin = player.get_nowplaying_idx();
+        player.next()
+        inx_after = player.get_nowplaying_idx();
+        if inx_begin != inx_after:
+            return "<h1 style='color:blue'>Next!</h1>"
+        else:
+            return "<h1 style='color:Orange'>End of list!</h1>"
 
     return app
 
