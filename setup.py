@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="ytplayer-pkg", # Replace with your own username
+    name="ytplayer-pkg_DANGO", # Replace with your own username
     version="0.0.1",
     author="Mr Dango",
     author_email="danglephd@gmail.com",
@@ -12,11 +12,14 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/danglephd/youtubePlayer.git",
-    packages=setuptools.find_packages(),
+    packages=['ytplayer_pkg'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+    ],
+    install_requires=[
+        "pafy == 0.5.5",
     ],
     python_requires='>=3.6',
 )
