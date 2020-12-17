@@ -13,8 +13,7 @@ from flask import request
 import os
 import sys
 import time
-# os.add_dll_directory(os.getcwd())
-os.add_dll_directory(r'C:\Program Files (x86)\VideoLAN\VLC')
+# os.add_dll_directory(r'C:\Program Files (x86)\VideoLAN\VLC')
 
 
 player = YouTubePlayer()
