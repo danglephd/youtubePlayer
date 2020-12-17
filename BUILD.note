@@ -1,4 +1,7 @@
-Build and Install
+Export requirement:
+	$ pip freeze > requirements.txt
+
+Build and Install:
 - When you want to deploy your application elsewhere, you build a distribution file. The current standard for Python distribution is the wheel format, with the .whl extension. Make sure the wheel library is installed first:
 	$ pip install wheel
 - Make setup.py
@@ -18,14 +21,13 @@ Build and Install
 - export FLASK_APP:
 	$env:FLASK_APP="ytplayer_pkg"
 	
-To deploy Python application
+To deploy Python application:
 - Install python
 - Use Waitress, first install it in the virtual environment:
 	$ pip install waitress
 
 - You need to tell Waitress about your application, but it doesn’t use FLASK_APP like flask run does. You need to tell it to import and call the application factory to get an application object.
 	$ waitress-serve --call 'ytplayer_pkg:create_app'
-	
 	
 	error: No module named 'vlc'
 	$ pip install python-vlc
