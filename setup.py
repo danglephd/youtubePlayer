@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ytplayer-pkg_DANGO", # Replace with your own username
-    version="0.0.1",
+    version="0.0.3",
     author="Mr Dango",
     author_email="danglephd@gmail.com",
     description="A Youtube player server Ad-Free",
