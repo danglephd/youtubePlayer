@@ -18,17 +18,17 @@ import time
 
 player = YouTubePlayer()
 playlist = []
-slack = Slack(
-    url='https://hooks.slack.com/services/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')
+# slack = Slack(
+#     url='https://hooks.slack.com/services/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')
 # Bind the Events API route to your existing Flask app by passing the server
 # instance as the last param, or with `server=app`.
 # Our app's Slack Event Adapter for receiving actions via the Events API
-SLACK_VERIFICATION_TOKEN = os.environ["SLACK_VERIFICATION_TOKEN"]
+# SLACK_VERIFICATION_TOKEN = os.environ["SLACK_VERIFICATION_TOKEN"]
 
 # Create a SlackClient for your bot to use for Web API requests
-SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
-SLACK_SIGNING_SECRET = os.environ["SLACK_SIGNING_SECRET"]
-slack_client = WebClient(SLACK_BOT_TOKEN)
+# SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
+# SLACK_SIGNING_SECRET = os.environ["SLACK_SIGNING_SECRET"]
+# slack_client = WebClient(SLACK_BOT_TOKEN)
 # ------------------------------------------------------------------------------
 
 # ==============================================================================
@@ -49,32 +49,31 @@ slack_client = WebClient(SLACK_BOT_TOKEN)
 
 def create_app():
     app = Flask(__name__)
-    slack_events_adapter = SlackEventAdapter(
-        SLACK_SIGNING_SECRET, "/slack/events", app)
-    # SLACK_VERIFICATION_TOKEN, "/slack/events", app)
+    # slack_events_adapter = SlackEventAdapter(
+    #     SLACK_SIGNING_SECRET, "/slack/events", app)
 
-    @app.route("/slack/events", methods=['POST'])
-    def slack_event():
-        body = request.get_json()
-        return body['challenge']
+    # @app.route("/slack/events", methods=['POST'])
+    # def slack_event():
+    #     body = request.get_json()
+    #     return body['challenge']
 
     # ==============================================================================
     # Event listener for app_mention events
     # app_mention events allow you to subscribe to only the messages directed
     # at your app's bot user
-    @slack_events_adapter.on("app_mention")
-    def handle_app_mention(event_data):
-        message = event_data["event"]
-        # If the incoming message contains "hi", then respond with a "Hello" message
-        if message.get("subtype") is None:
-            # If the incoming message contains "hi", then respond with
-            # a "Hello" message
-            if "hi" in message.get('text'):
-                res_message = "Hi <@{}>! How do you feel today?".format(message["user"])
-                # send_survey(message["user"], message["channel"], res_message)
-            else:
-                res_message = "Pardon, I don't understand you."
-                # send_survey(message["user"], message["channel"], res_message)
+    # @slack_events_adapter.on("app_mention")
+    # def handle_app_mention(event_data):
+        # message = event_data["event"]
+        # # If the incoming message contains "hi", then respond with a "Hello" message
+        # if message.get("subtype") is None:
+        #     # If the incoming message contains "hi", then respond with
+        #     # a "Hello" message
+        #     if "hi" in message.get('text'):
+        #         res_message = "Hi <@{}>! How do you feel today?".format(message["user"])
+        #         # send_survey(message["user"], message["channel"], res_message)
+        #     else:
+        #         res_message = "Pardon, I don't understand you."
+        #         # send_survey(message["user"], message["channel"], res_message)
     # ------------------------------------------------------------------------------
 
     @app.route("/")
