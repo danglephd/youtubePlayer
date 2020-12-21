@@ -1,6 +1,10 @@
 Export requirement:
 	$ pip freeze > requirements.txt
 
+Run on Windows:
+# os.add_dll_directory(r'C:\Program Files (x86)\VideoLAN\VLC')
+Need to enable this on __init__.py to locate VLC
+
 Build and Install:
 - When you want to deploy your application elsewhere, you build a distribution file. The current standard for Python distribution is the wheel format, with the .whl extension. Make sure the wheel library is installed first:
 	$ pip install wheel
@@ -12,7 +16,8 @@ Build and Install:
 		. Create a project folder and a venv folder within:
 			$ py -3 -m venv venv
 		. Activate the environment
-			venv\Scripts\activate
+			venv\Scripts\activate # window 
+			$ . venv/bin/activate # linux
 	+ Install Flask, within the activated environment
 		$ pip install Flask
 - Copy *.whl file to production pc
