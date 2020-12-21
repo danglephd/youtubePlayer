@@ -24,46 +24,55 @@ $ sudo pip install youtube_dl
 $ sudo pip install pafy
 ```
 
-See the following links for further information on the installation process:
-* [Pafy Repository](https://github.com/mps-youtube/pafy)
-* [VLC Bindings](https://wiki.videolan.org/Python_bindings/)
+## Deploy on production:
+1. Create an new folder XXX
+2. Setup a new virtualenv
+3. Copy file ytplayer_pkg_DANGO-0.0.3-py3-none-any.whl to folder XXX
+4. Activate the Environment by: 
+````
+$ . venv/bin/activate
+````
+5. Install the wheel file
+````
+$ pip install ytplayer_pkg_DANGO-0.0.3-py3-none-any.whl
+````
+6. Export package
+````
+$ export FLASK_APP=flaskr
+````
+7. Make sure you have Waitress
+````
+$ pip install waitress
+````
+8. Run server by:
+````
+$ waitress-serve --call 'ytplayer_pkg:create_app'
+````
+9. Server will run on localhost:8080, test server by access: 
+```sh
+http://localhost:8080/ 
+```
+=> Server will show: Hello, World!
 
-####Running the Server
+10. Congratulation! Now you can work with HiDJ by:
+
+| API | Description | Body | Method |
+| ------ | ------ | ------ | ------ |
+| /add | Add link youtube to HiDJ | {    "url": "{{youtubeUrl}}"} | POST |
+| /play | Request play music | | GET |
+| /next | Play next | | GET |
+| /pause | Pause music | | GET |
+
+####Running the Server (on local)
 Just run the server script, assigning a hostname and a port to it.
 ```bash
 usage: 
-$ python server.py [hostname] [port]
+$ Flask run
 
 example: 
-$ python server.py localhost 9999
+$ Flask run localhost 9999
 ```
-####Running the Client
-First, run the client script, assigning a hostname and a port to it.
-```bash
-usage: 
-$ python client.py [hostname] [port]
 
-example: 
-$ python client.py localhost 9999
-```
-This will initialize the client and open a command prompt. The following commands are accepted:
-* `/play`
-* `/pause`
-* `/next`
-* `/add [YOUTUBE URL]`
-* `/search [KEYWORDS]`
-* `/nowplaying`
-* `/playlist`
-* `/queue`
-
-See the example:
-```bash
-$ python client.py localhost 9999
->> /add https://www.youtube.com/watch?v=OPf0YbXqDm0
->> /add https://www.youtube.com/watch?v=YQHsXMglC9A
->> /add https://www.youtube.com/watch?v=oyEuk8j8imI
->> /play
-```
 ## Error
 ### Server :
  * Could not find module 'libvlc.dll' => os.add_dll_directory(os.getcwd()) => os.add_dll_directory(r'C:\Program Files (x86)\VideoLAN\VLC')
