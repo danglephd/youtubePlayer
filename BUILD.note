@@ -14,10 +14,11 @@ Build and Install:
 - Setup new virtualenv:
 	+ Create an environment
 		. Create a project folder and a venv folder within:
-			$ py -3 -m venv venv
+			$ py -3 -m venv venv # (windows)
+			$ python3 -m venv venv # (linux)
 		. Activate the environment
-			venv\Scripts\activate # window 
-			$ . venv/bin/activate # linux
+			venv\Scripts\activate # (window) 
+			$ . venv/bin/activate # (linux)
 	+ Install Flask, within the activated environment
 		$ pip install Flask
 - Copy *.whl file to production pc
