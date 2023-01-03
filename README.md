@@ -94,7 +94,11 @@ $ Flask run localhost 9999
 
  * a bytes-like object is required, not 'str'
 
+
 ### Client Error:
+ * KeyError: 'like_count'
+  > Should downgrade youtube-dl version: $ pip install youtube-dl==2020.12.2
+ 
  * Undefined variable 'raw_input'
 
     >Starting with Python 3, raw_input() was renamed to input().
