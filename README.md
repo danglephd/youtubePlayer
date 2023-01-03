@@ -75,11 +75,14 @@ $ Flask run localhost 9999
 
 ## Error
 ### Server :
- * Could not find module 'libvlc.dll' => os.add_dll_directory(os.getcwd()) => os.add_dll_directory(r'C:\Program Files (x86)\VideoLAN\VLC')
+ * Could not find module 'libvlc.dll' => os.add_dll_directory(os.getcwd())-> os.add_dll_directory(r'C:\Program Files (x86)\VideoLAN\VLC')
 
     >DLL dependencies for extension modules and DLLs loaded with ctypes on Windows are now resolved more securely. Only the system paths, the directory containing the DLL or PYD file, and directories added with add_dll_directory() are searched for load-time dependencies. Specifically, PATH and the current working directory are no longer used, and modifications to these will no longer have any effect on normal DLL resolution. If your application relies on these mechanisms, you should check for add_dll_directory() and if it exists, use it to add your DLLs directory while loading your library. Note that Windows 7 users will need to ensure that Windows Update KB2533623 has been installed (this is also verified by the installer).
     
     > PATH or cwd cannot be used any more unless you specifically add these directories to the dll search path.
+    
+    > Solved 1: Copy plugins,libvlc.dll and libvlccore.dll to C:\Windows\System32
+
 
  * No module named 'SocketServer'
  
