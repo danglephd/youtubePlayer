@@ -15,6 +15,8 @@ import sys
 import time
 import jsonpickle
 from YoutubeObj import YoutubeObj
+import utils
+
 # os.add_dll_directory(os.getcwd())
 # os.add_dll_directory(r'C:\Program Files (x86)\VideoLAN\VLC')
 
@@ -22,7 +24,8 @@ from YoutubeObj import YoutubeObj
 player = YouTubePlayer()
 playlist = []
 slack = Slack(
-    url='https://hooks.slack.com/services/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')
+    url="https://hooks.slack.com/services/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"
+)
 # Bind the Events API route to your existing Flask app by passing the server
 # instance as the last param, or with `server=app`.
 # Our app's Slack Event Adapter for receiving actions via the Events API
@@ -30,6 +33,7 @@ slack = Slack(
 SLACK_VERIFICATION_TOKEN = ""
 SLACK_BOT_TOKEN = ""
 SLACK_SIGNING_SECRET = ""
+PLAY_LIST_LENGTH = 6
 
 try:
     SLACK_VERIFICATION_TOKEN = os.environ["SLACK_VERIFICATION_TOKEN"]
@@ -38,7 +42,7 @@ try:
     SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
     SLACK_SIGNING_SECRET = os.environ["SLACK_SIGNING_SECRET"]
     slack_client = WebClient(SLACK_BOT_TOKEN)
-except KeyError: 
+except KeyError:
     print("Environment variable does not exist", KeyError)
 # ------------------------------------------------------------------------------
 
@@ -49,54 +53,109 @@ except KeyError:
 def send_survey(user, channel, text):
     # More info: https://api.slack.com/docs/message-menus
     # Send an in-channel reply to the user
-    print('>>send_survey>>', channel)
+    print(">>send_survey>>", channel)
     slack_client.api_call(
-        api_method='chat.postMessage',
-        json={'channel': channel,
-              'text': text}
+        api_method="chat.postMessage", json={"channel": channel, "text": text}
     )
+
+
 # ------------------------------------------------------------------------------
 
 
 def create_app():
     app = Flask(__name__)
-    slack_events_adapter = SlackEventAdapter(
-        SLACK_SIGNING_SECRET, "/slack/events", app)
+    slack_events_adapter = SlackEventAdapter(SLACK_SIGNING_SECRET, "/slack/events", app)
     print("Server start...")
     # SLACK_VERIFICATION_TOKEN, "/slack/events", app)
 
-    @app.route("/slack/events", methods=['POST'])
+    @app.route("/slack/events", methods=["POST"])
     def slack_event():
         body = request.get_json()
-        return body['challenge']
+        return body["challenge"]
 
-#     # ==============================================================================
-#     # Event listener for app_mention events
-#     # app_mention events allow you to subscribe to only the messages directed
-#     # at your app's bot user
+    #     # ==============================================================================
+    #     # Event listener for app_mention events
+    #     # app_mention events allow you to subscribe to only the messages directed
+    #     # at your app's bot user
     @slack_events_adapter.on("app_mention")
     def handle_app_mention(event_data):
         message = event_data["event"]
-#         # If the incoming message contains "hi", then respond with a "Hello" message
+        #         # If the incoming message contains "hi", then respond with a "Hello" message
         if message.get("subtype") is None:
-#             # If the incoming message contains "hi", then respond with
-#             # a "Hello" message
-            if "hi" in message.get('text'):
+            #             # If the incoming message contains "hi", then respond with
+            #             # a "Hello" message
+            if "hi" in message.get("text"):
                 res_message = "Hi <@{}>! How do you feel today?".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
             else:
                 res_message = "Pardon, I don't understand you."
                 send_survey(message["user"], message["channel"], res_message)
-#     # ------------------------------------------------------------------------------
-    
+
+    #     # ------------------------------------------------------------------------------
+
     def ytObjDecoder(obj):
-        return YoutubeObj(obj['name'], obj['url'], obj['duration'])
-    
+        return YoutubeObj(obj["name"], obj["url"], obj["duration"])
+            
+    def isNotPlaying():
+        currentSong = player.get_nowplaying()
+        return currentSong != {}
+        
+    def checkValidYT(urlStr):
+        # Check Playing
+        if isNotPlaying():
+            # first: need to update playlist
+            updatePlayList()
+        ytObjCnt = len(playlist)
+        
+        # Check overflow
+        if ytObjCnt >= PLAY_LIST_LENGTH:
+            print(">>>OverFlow!")
+            return False
+
+        # Check duplicate
+        for item in playlist:
+            if urlStr == item.url:
+                print(">>>Duplicate!")
+                return False
+        return True
+
+    def updatePlayList():
+        ytStr = jsonpickle.encode(playlist, unpicklable=False)
+        ytObject = jsonpickle.decode(ytStr)
+        try:
+            currentSong = jsonpickle.decode(player.get_nowplaying())
+            currentSongUrl = currentSong["url"]
+            print(">>>currentSongUrl", currentSongUrl)
+            firstOnPlaylist = playlist[0]
+            firstOnPlaylistUrl = firstOnPlaylist.url
+            print(">>>lastOnPlaylistUrl", firstOnPlaylistUrl)
+            while currentSongUrl != firstOnPlaylistUrl:
+                playlist.pop(0)
+                ytStr = jsonpickle.encode(playlist, unpicklable=False)
+                ytObject = jsonpickle.decode(ytStr)
+                ytObjCnt = len(playlist)
+                firstOnPlaylist = playlist[0]
+                firstOnPlaylistUrl = firstOnPlaylist.url
+                if ytObjCnt <= 0:
+                    print("Lengh is less than 0!!")
+                    break
+        except:
+            print("An exception occurred")
+        return ytObject
+
     def initList():
         print("Init...")
-        urls = ['https://www.youtube.com/watch?v=eVTXPUF4Oz4',
-               'https://www.youtube.com/watch?v=kXYiU_JCYtU'
-               ]
+        urls = [
+            'https://www.youtube.com/watch?v=9Auq9mYxFEE',
+            "https://www.youtube.com/watch?v=HZ3XumHDDwA",
+            "https://www.youtube.com/watch?v=nmyQp1NHwlo",
+            "https://www.youtube.com/watch?v=c4oPebyC43Y",
+            # "https://www.youtube.com/watch?v=XiPBcwQru7g",
+            # "https://www.youtube.com/watch?v=bXbyuy-IfKA",
+            # "https://www.youtube.com/watch?v=FGs1FUpshYo",
+            # "https://www.youtube.com/watch?v=pjHrqX6UErE",
+            # "https://www.youtube.com/watch?v=hk7Wypp5gcY",
+        ]
         for url in urls:
             yt_vid = YouTubeVideo.get_instance(url)
             playlist.append(yt_vid)
@@ -106,47 +165,54 @@ def create_app():
     def hello():
         return "Hello, World!"
 
-    @app.route("/list", methods=['GET'])
+    @app.route("/list", methods=["GET"])
     def list():
-        obj = jsonpickle.encode(playlist, unpicklable=False)
-        studentObject = jsonpickle.decode(obj)
-        return studentObject
+        lstYtObject = updatePlayList()
+        return lstYtObject
 
-    @app.route("/add", methods=['POST'])
+    @app.route("/add", methods=["POST"])
     def add():
         # print('>>>', request.form['url'])
         # req_data = request.args.get('url')
         # req_data = request.args['url']
         req_data = request.get_json()
-        print('>>>', req_data)
-        if 'url' in req_data:
-            url = req_data['url']
-            try:
-                yt_vid = YouTubeVideo.get_instance(url)
-                playlist.append(yt_vid)
-                player.enqueue(yt_vid)
-                return "<h1 style='color:blue'>POST: add!</h1>"
-            except Exception as err:
-                print(f"Unexpected {err=}, {type(err)=}")
-                return "<h1 style='color:blue'>POST: add!</h1>"
+        print(">>>", req_data)
+        if "url" in req_data:
+            url = req_data["url"]
+            yt_vid = YouTubeVideo.get_instance(url)
+            # Check duration
+            if utils.checkDuration(yt_vid) == False:
+                return "<h1 style='color:red'>Video's duration is not valid, add fail!</h1>"
+            
+            if checkValidYT(url):
+                try:
+                    playlist.append(yt_vid)
+                    player.enqueue(yt_vid)
+                    return "<h1 style='color:blue'>POST: add!</h1>"
+                except Exception as err:
+                    print(f"Unexpected {err=}, {type(err)=}")
+                    return "<h1 style='color:blue'>POST: add!</h1>"
+            else:
+                return "<h1 style='color:red'>Url not valid, add fail!</h1>"
         else:
-            return "<h1 style='color:blue'>No url, add fail!</h1>"
+            return "<h1 style='color:red'>No url, add fail!</h1>"
 
-    @app.route("/play", methods=['POST'])
+    @app.route("/play", methods=["POST"])
     def play():
         player.play()
         return "<h1 style='color:blue'>Play!</h1>"
 
-    @app.route("/pause", methods=['POST'])
+    @app.route("/pause", methods=["POST"])
     def pause():
         player.pause()
         return "<h1 style='color:red'>Pause!</h1>"
 
-    @app.route("/next", methods=['POST'])
+    @app.route("/next", methods=["POST"])
     def next():
-        inx_begin = player.get_nowplaying_idx();
+        inx_begin = player.get_nowplaying_idx()
+        playlist.pop(0)
         player.next()
-        inx_after = player.get_nowplaying_idx();
+        inx_after = player.get_nowplaying_idx()
         if inx_begin != inx_after:
             return "<h1 style='color:blue'>Next!</h1>"
         else:
@@ -155,7 +221,7 @@ def create_app():
     # just for test >>
     initList()
     # just for test <<
-    
+
     return app
 
 
@@ -170,4 +236,4 @@ def __init__(self, player, playlist):
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(host='0.0.0.0', port='80')
+    app.run(host="0.0.0.0", port="80")
