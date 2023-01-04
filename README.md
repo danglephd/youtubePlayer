@@ -22,6 +22,11 @@ $ sudo apt-get install vlc
 $ sudo apt-get install vlc-plugin-*
 $ sudo pip install youtube_dl
 $ sudo pip install pafy
+$ sudo pip install slack_sdk
+$ pip install slackeventsapi
+$ pip install aiohttp
+$ pip install slack-webhook
+
 ```
 
 ## Deploy on production:
