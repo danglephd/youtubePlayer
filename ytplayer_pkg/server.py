@@ -13,6 +13,8 @@ from flask import request
 import os
 import sys
 import time
+import jsonpickle
+from YoutubeObj import YoutubeObj
 # os.add_dll_directory(os.getcwd())
 # os.add_dll_directory(r'C:\Program Files (x86)\VideoLAN\VLC')
 
@@ -60,6 +62,7 @@ def create_app():
     app = Flask(__name__)
     slack_events_adapter = SlackEventAdapter(
         SLACK_SIGNING_SECRET, "/slack/events", app)
+    print("Server start...")
     # SLACK_VERIFICATION_TOKEN, "/slack/events", app)
 
     @app.route("/slack/events", methods=['POST'])
@@ -85,27 +88,49 @@ def create_app():
                 res_message = "Pardon, I don't understand you."
                 send_survey(message["user"], message["channel"], res_message)
 #     # ------------------------------------------------------------------------------
+    
+    def ytObjDecoder(obj):
+        return YoutubeObj(obj['name'], obj['url'], obj['duration'])
+    
+    def initList():
+        print("Init...")
+        urls = ['https://www.youtube.com/watch?v=eVTXPUF4Oz4',
+               'https://www.youtube.com/watch?v=kXYiU_JCYtU'
+               ]
+        for url in urls:
+            yt_vid = YouTubeVideo.get_instance(url)
+            playlist.append(yt_vid)
+            player.enqueue(yt_vid)
 
     @app.route("/")
     def hello():
         return "Hello, World!"
 
-    @app.route("/add", methods=['GET', 'POST'])
+    @app.route("/list", methods=['GET'])
+    def list():
+        obj = jsonpickle.encode(playlist, unpicklable=False)
+        studentObject = jsonpickle.decode(obj)
+        return studentObject
+
+    @app.route("/add", methods=['POST'])
     def add():
-        if request.method == 'POST':
-            # print('>>>', request.form['url'])
-            # req_data = request.args.get('url')
-            # req_data = request.args['url']
-            req_data = request.get_json()
-            print('>>>', req_data)
-            if 'url' in req_data:
-                url = req_data['url']
+        # print('>>>', request.form['url'])
+        # req_data = request.args.get('url')
+        # req_data = request.args['url']
+        req_data = request.get_json()
+        print('>>>', req_data)
+        if 'url' in req_data:
+            url = req_data['url']
+            try:
                 yt_vid = YouTubeVideo.get_instance(url)
                 playlist.append(yt_vid)
                 player.enqueue(yt_vid)
-            return "<h1 style='color:blue'>POST: add!</h1>"
+                return "<h1 style='color:blue'>POST: add!</h1>"
+            except Exception as err:
+                print(f"Unexpected {err=}, {type(err)=}")
+                return "<h1 style='color:blue'>POST: add!</h1>"
         else:
-            return "<h1 style='color:red'>GET: add!</h1>"
+            return "<h1 style='color:blue'>No url, add fail!</h1>"
 
     @app.route("/play", methods=['POST'])
     def play():
@@ -127,6 +152,10 @@ def create_app():
         else:
             return "<h1 style='color:Orange'>End of list!</h1>"
 
+    # just for test >>
+    initList()
+    # just for test <<
+    
     return app
 
 
@@ -139,6 +168,6 @@ def __init__(self, player, playlist):
     return
 
 
-# if __name__ == "__main__":
-#     app = create_app()
-#     app.run('0.0.0.0')
+if __name__ == "__main__":
+    app = create_app()
+    app.run(host='0.0.0.0', port='80')
