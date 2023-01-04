@@ -26,6 +26,7 @@ $ sudo pip install slack_sdk
 $ pip install slackeventsapi
 $ pip install aiohttp
 $ pip install slack-webhook
+$ pip install jsonpickle
 
 ```
 
