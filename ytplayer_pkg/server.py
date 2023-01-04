@@ -125,10 +125,8 @@ def create_app():
         try:
             currentSong = jsonpickle.decode(player.get_nowplaying())
             currentSongUrl = currentSong["url"]
-            print(">>>currentSongUrl", currentSongUrl)
             firstOnPlaylist = playlist[0]
             firstOnPlaylistUrl = firstOnPlaylist.url
-            print(">>>lastOnPlaylistUrl", firstOnPlaylistUrl)
             while currentSongUrl != firstOnPlaylistUrl:
                 playlist.pop(0)
                 ytStr = jsonpickle.encode(playlist, unpicklable=False)
@@ -143,24 +141,6 @@ def create_app():
             print("An exception occurred")
         return ytObject
 
-    def initList():
-        print("Init...")
-        urls = [
-            'https://www.youtube.com/watch?v=9Auq9mYxFEE',
-            "https://www.youtube.com/watch?v=HZ3XumHDDwA",
-            "https://www.youtube.com/watch?v=nmyQp1NHwlo",
-            "https://www.youtube.com/watch?v=c4oPebyC43Y",
-            # "https://www.youtube.com/watch?v=XiPBcwQru7g",
-            # "https://www.youtube.com/watch?v=bXbyuy-IfKA",
-            # "https://www.youtube.com/watch?v=FGs1FUpshYo",
-            # "https://www.youtube.com/watch?v=pjHrqX6UErE",
-            # "https://www.youtube.com/watch?v=hk7Wypp5gcY",
-        ]
-        for url in urls:
-            yt_vid = YouTubeVideo.get_instance(url)
-            playlist.append(yt_vid)
-            player.enqueue(yt_vid)
-
     @app.route("/")
     def hello():
         return "Hello, World!"
@@ -172,11 +152,7 @@ def create_app():
 
     @app.route("/add", methods=["POST"])
     def add():
-        # print('>>>', request.form['url'])
-        # req_data = request.args.get('url')
-        # req_data = request.args['url']
         req_data = request.get_json()
-        print(">>>", req_data)
         if "url" in req_data:
             url = req_data["url"]
             yt_vid = YouTubeVideo.get_instance(url)
@@ -217,10 +193,6 @@ def create_app():
             return "<h1 style='color:blue'>Next!</h1>"
         else:
             return "<h1 style='color:Orange'>End of list!</h1>"
-
-    # just for test >>
-    initList()
-    # just for test <<
 
     return app
 
