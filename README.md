@@ -21,7 +21,7 @@ In order to run this project, you need to install vlc (and plugins), youtube-dl 
 $ sudo apt-get install vlc
 $ sudo apt-get install vlc-plugin-*
 $ sudo pip install youtube_dl
-$ sudo pip install pafy
+$ pip install git+https://github.com/Cupcakus/pafy => sudo pip install pafy
 $ sudo pip install slack_sdk
 $ pip install slackeventsapi
 $ pip install aiohttp
@@ -29,6 +29,10 @@ $ pip install slack-webhook
 $ pip install jsonpickle
 
 ```
+
+## About Slack connection:
+1. Should have .env copy from .flashenv
+2. Update Slack Tokens from App Slack "Basic Information"
 
 ## Deploy on production:
 1. Create an new folder XXX

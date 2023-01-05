@@ -24,8 +24,9 @@ import utils
 player = YouTubePlayer()
 playlist = []
 slack = Slack(
-    url="https://hooks.slack.com/services/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"
+    url="https://hooks.slack.com/services/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"
 )
+slack.post(text="Hello, world.")
 # Bind the Events API route to your existing Flask app by passing the server
 # instance as the last param, or with `server=app`.
 # Our app's Slack Event Adapter for receiving actions via the Events API
@@ -66,7 +67,6 @@ def create_app():
     app = Flask(__name__)
     slack_events_adapter = SlackEventAdapter(SLACK_SIGNING_SECRET, "/slack/events", app)
     print("Server start...")
-    # SLACK_VERIFICATION_TOKEN, "/slack/events", app)
 
     @app.route("/slack/events", methods=["POST"])
     def slack_event():
