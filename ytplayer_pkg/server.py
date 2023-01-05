@@ -3,8 +3,8 @@ import vlc
 import urllib
 import json
 from slackeventsapi import SlackEventAdapter
-from slack import WebClient
-from slack_webhook import Slack
+from slack_sdk import WebClient
+from slack_sdk.webhook import WebhookClient
 from ytplayer_pkg.youtube_lib import YouTubePlayer, YouTubeVideo
 from urllib.parse import urlencode
 import threading
@@ -23,10 +23,11 @@ import utils
 
 player = YouTubePlayer()
 playlist = []
-slack = Slack(
-    url="https://hooks.slack.com/services/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"
+slack = WebhookClient(
+    url="https://hooks.slack.com/services/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"
+    # https://hooks.slack.com/services/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
 )
-slack.post(text="Hello, world.")
+slack.send(text="Hello, world.")
 # Bind the Events API route to your existing Flask app by passing the server
 # instance as the last param, or with `server=app`.
 # Our app's Slack Event Adapter for receiving actions via the Events API
