@@ -55,7 +55,6 @@ except KeyError:
 def send_survey(user, channel, text):
     # More info: https://api.slack.com/docs/message-menus
     # Send an in-channel reply to the user
-    print(">>send_survey>>", channel)
     slack_client.api_call(
         api_method="chat.postMessage", json={"channel": channel, "text": text}
     )
@@ -71,6 +70,7 @@ def create_app():
 
     @app.route("/slack/events", methods=["POST"])
     def slack_event():
+        print(">>/slack/events...")
         body = request.get_json()
         return body["challenge"]
 
@@ -81,12 +81,42 @@ def create_app():
     @slack_events_adapter.on("app_mention")
     def handle_app_mention(event_data):
         message = event_data["event"]
+        print(">>app_mention...")
+        
         #         # If the incoming message contains "hi", then respond with a "Hello" message
         if message.get("subtype") is None:
             #             # If the incoming message contains "hi", then respond with
             #             # a "Hello" message
-            if "hi" in message.get("text"):
+            text = message.get("text")
+            print(">>Slack mention: ", text)
+            
+            if "hi" in text:
                 res_message = "Hi <@{}>! How do you feel today?".format(message["user"])
+                send_survey(message["user"], message["channel"], res_message)
+            elif "play" in text:
+                print(">>/play")
+                play()
+                res_message = "Music is playing, <@{}>!".format(message["user"])
+                send_survey(message["user"], message["channel"], res_message)
+            elif "next" in text:
+                print(">>/next")
+                next()
+                res_message = "Next song, <@{}>!".format(message["user"])
+                send_survey(message["user"], message["channel"], res_message)
+            elif "pause" in text:
+                print(">>/pause")
+                pause()
+                res_message = "Music paused, <@{}>!".format(message["user"])
+                send_survey(message["user"], message["channel"], res_message)
+            elif "https://www.youtube.com/watch?v=" in text:
+                begin = text.index(" <")
+                begin = begin + 2
+                url = text[begin:]
+                end = url.index(">")
+                url = url[0: end]
+                print(">>/youtube ", begin, text, end, url)
+                addMusic(url)
+                res_message = "Song added, <@{}>!".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
             else:
                 res_message = "Pardon, I don't understand you."
@@ -141,8 +171,25 @@ def create_app():
         except:
             print("An exception occurred")
         return ytObject
+    
+    def addMusic(url):
+        yt_vid = YouTubeVideo.get_instance(url)
+        # Check duration
+        if utils.checkDuration(yt_vid) == False:
+            return "<h1 style='color:red'>Video's duration is not valid, add fail!</h1>"
+        
+        if checkValidYT(url):
+            try:
+                playlist.append(yt_vid)
+                player.enqueue(yt_vid)
+                return "<h1 style='color:blue'>POST: add!</h1>"
+            except Exception as err:
+                print(f"Unexpected {err=}, {type(err)=}")
+                return "<h1 style='color:blue'>POST: add!</h1>"
+        else:
+            return "<h1 style='color:red'>Url not valid, add fail!</h1>"
 
-    @app.route("/")
+    @app.route("/", methods=["GET", "POST"])
     def hello():
         return "Hello, World!"
 
@@ -156,21 +203,7 @@ def create_app():
         req_data = request.get_json()
         if "url" in req_data:
             url = req_data["url"]
-            yt_vid = YouTubeVideo.get_instance(url)
-            # Check duration
-            if utils.checkDuration(yt_vid) == False:
-                return "<h1 style='color:red'>Video's duration is not valid, add fail!</h1>"
-            
-            if checkValidYT(url):
-                try:
-                    playlist.append(yt_vid)
-                    player.enqueue(yt_vid)
-                    return "<h1 style='color:blue'>POST: add!</h1>"
-                except Exception as err:
-                    print(f"Unexpected {err=}, {type(err)=}")
-                    return "<h1 style='color:blue'>POST: add!</h1>"
-            else:
-                return "<h1 style='color:red'>Url not valid, add fail!</h1>"
+            return addMusic(url)
         else:
             return "<h1 style='color:red'>No url, add fail!</h1>"
 
