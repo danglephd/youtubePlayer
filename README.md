@@ -32,7 +32,22 @@ $ pip install jsonpickle
 
 ## About Slack connection:
 1. Should have .env copy from .flashenv
-2. Update Slack Tokens from App Slack "Basic Information"
+2. Update Slack Tokens from App Slack "Basic Information"d
+3. Config bot
+   3.1 go to Slack Event Subscriptions
+   3.1.1 Enable Event 
+   3.1.2 For Dev: need to enable ngrok to get https
+   3.1.3 Add Request URL from ngrok, Ex: https://3267-103-145-2-249.ap.ngrok.io//slack/events
+   3.1.4 Subscribe to bot events
+   3.2 go to Incoming Webhooks
+   3.2.1 Activate Incoming Webhooks
+   3.2.1 Copy Webhook URL to .env
+   3.3 go to OAuth & Permissions
+   3.3.1 Add OAuth Scope: chat:write:bot
+   3.3.1 Reinstall app
+
+
+4. https://github.com/slackapi/python-slack-events-api
 
 ## Deploy on production:
 1. Create an new folder XXX
