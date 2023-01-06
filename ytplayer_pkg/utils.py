@@ -26,5 +26,5 @@ def validateYTUrl(text):
 def getPlaylistStr(playlist):
     res_message = "Your playlist:"
     for item in playlist:
-        res_message += '\n - {} - {} - {}'.format(item.name, item.duration, item.url)
+        res_message += '\n - *{}* - _{}_ - {}'.format(item.name, item.duration, item.url)
     return res_message
