@@ -94,6 +94,12 @@ def create_app():
             if "hi " in text:
                 res_message = "Hi <@{}>! How do you feel today?".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
+            elif " vol" in text:
+                print(">>/volumn")
+                vol = utils.getVolumnFromSlack(text)
+                player.set_volume(vol)
+                res_message = "<@{}>, volumn is changed to {}!".format(message["user"], vol)
+                send_survey(message["user"], message["channel"], res_message)
             elif " play" in text:
                 print(">>/play")
                 play()
@@ -221,6 +227,17 @@ def create_app():
         lstYtObject = updatePlayList()
         return lstYtObject
 
+    @app.route("/vol", methods=["POST"])
+    def set_vol():
+        req_data = request.get_json()
+        if "vol" in req_data:
+            volStr = req_data["vol"]
+            vol = utils.validateVolumn(volStr)
+            player.set_volume(vol)
+            return "<h1 style='color:green'>Volumn set to {}!</h1>".format(vol)
+        else:
+            return "<h1 style='color:red'>Volumn set fail!</h1>"
+        
     @app.route("/add", methods=["POST"])
     def add():
         req_data = request.get_json()
