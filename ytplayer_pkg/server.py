@@ -245,6 +245,7 @@ def create_app():
     @app.route("/clear", methods=["POST"])
     def clear():
         player.stop()
+        player.clear_playlist()
         playlist.clear()
         return "<h1 style='color:red'>Clear!</h1>"
 

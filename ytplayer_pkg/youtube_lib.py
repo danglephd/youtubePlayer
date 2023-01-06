@@ -46,6 +46,15 @@ class YouTubePlayer:
         self.event_manager = self.list_player.event_manager()
 
 
+    def clear_playlist(self):
+        self.instance = vlc.Instance("--no-video")
+        self.playlist = self.instance.media_list_new()
+        self.player = self.instance.media_player_new()
+        self.list_player = self.instance.media_list_player_new()
+        self.list_player.set_media_player(self.player)
+        self.list_player.set_media_list(self.playlist)
+        self.event_manager = self.list_player.event_manager()
+        return
     def play(self):
         self.list_player.play()
         return
