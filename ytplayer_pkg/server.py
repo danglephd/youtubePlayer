@@ -207,6 +207,14 @@ def create_app():
     @app.route("/", methods=["GET", "POST"])
     def hello():
         return "Hello, World!"
+    
+    @app.route("/talk", methods=["POST"])
+    def talk():
+        req_data = request.get_json()
+        # ---to channel, use: !channel
+        if "text" in req_data:
+            slack.send(text=req_data["text"])
+        return "<h1 style='color:blue'>Talked to Slack!</h1>"
 
     @app.route("/list", methods=["GET"])
     def list():
