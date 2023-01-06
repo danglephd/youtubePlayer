@@ -16,6 +16,7 @@ import time
 import jsonpickle
 from YoutubeObj import YoutubeObj
 import utils
+from yt_enum import SongAddingState
 
 # os.add_dll_directory(os.getcwd())
 # os.add_dll_directory(r'C:\Program Files (x86)\VideoLAN\VLC')
@@ -24,7 +25,7 @@ import utils
 player = YouTubePlayer()
 playlist = []
 slack = WebhookClient(
-    url="https://hooks.slack.com/services/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"
+    url="https://hooks.slack.com/services/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"
     # https://hooks.slack.com/services/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
 )
 slack.send(text="Hello, world.")
@@ -103,6 +104,11 @@ def create_app():
                 next()
                 res_message = "Next song, <@{}>!".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
+            elif "clear" in text:
+                print(">>/clear")
+                clear()
+                res_message = "Stop, Playlist is clean, <@{}>!".format(message["user"])
+                send_survey(message["user"], message["channel"], res_message)
             elif "pause" in text:
                 print(">>/pause")
                 pause()
@@ -115,8 +121,16 @@ def create_app():
                 end = url.index(">")
                 url = url[0: end]
                 print(">>/youtube ", begin, text, end, url)
-                addMusic(url)
-                res_message = "Song added, <@{}>!".format(message["user"])
+                addingResult = addMusic(url)
+                match addingResult:
+                    case SongAddingState.Success:
+                        res_message = "Song added, <@{}>!".format(message["user"])
+                    case SongAddingState.Fail_Duration:
+                        res_message = "<@{}>, Your song's duartion is not good, we can not add it!".format(message["user"])
+                    case SongAddingState.Fail_Exception:
+                        res_message = "<@{}>, Add fail, please contact with your Administrator!".format(message["user"])
+                    case SongAddingState.Fail_Url_Invalid:
+                        res_message = "<@{}>, Add fail, Url not valid!".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
             else:
                 res_message = "Pardon, I don't understand you."
@@ -176,18 +190,18 @@ def create_app():
         yt_vid = YouTubeVideo.get_instance(url)
         # Check duration
         if utils.checkDuration(yt_vid) == False:
-            return "<h1 style='color:red'>Video's duration is not valid, add fail!</h1>"
+            return SongAddingState.Fail_Duration
         
         if checkValidYT(url):
             try:
                 playlist.append(yt_vid)
                 player.enqueue(yt_vid)
-                return "<h1 style='color:blue'>POST: add!</h1>"
+                return SongAddingState.Success
             except Exception as err:
                 print(f"Unexpected {err=}, {type(err)=}")
-                return "<h1 style='color:blue'>POST: add!</h1>"
+                return SongAddingState.Fail_Exception
         else:
-            return "<h1 style='color:red'>Url not valid, add fail!</h1>"
+            return SongAddingState.Fail_Url_Invalid
 
     @app.route("/", methods=["GET", "POST"])
     def hello():
@@ -203,7 +217,17 @@ def create_app():
         req_data = request.get_json()
         if "url" in req_data:
             url = req_data["url"]
-            return addMusic(url)
+            
+            addingResult = addMusic(url)
+            match addingResult:
+                case SongAddingState.Success:
+                    return "<h1 style='color:blue'>POST: add!</h1>"
+                case SongAddingState.Fail_Duration:
+                    return "<h1 style='color:red'>Video's duration is not valid, add fail!</h1>"
+                case SongAddingState.Fail_Exception:
+                    return "<h1 style='color:red'>Exception throw, add fail!</h1>"
+                case SongAddingState.Fail_Url_Invalid:
+                    return "<h1 style='color:red'>Url not valid, add fail!</h1>"
         else:
             return "<h1 style='color:red'>No url, add fail!</h1>"
 
@@ -216,6 +240,12 @@ def create_app():
     def pause():
         player.pause()
         return "<h1 style='color:red'>Pause!</h1>"
+    
+    @app.route("/clear", methods=["POST"])
+    def clear():
+        player.stop()
+        playlist.clear()
+        return "<h1 style='color:red'>Clear!</h1>"
 
     @app.route("/next", methods=["POST"])
     def next():
