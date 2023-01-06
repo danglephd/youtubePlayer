@@ -91,36 +91,31 @@ def create_app():
             text = message.get("text")
             print(">>Slack mention: ", text)
             
-            if "hi" in text:
+            if "hi " in text:
                 res_message = "Hi <@{}>! How do you feel today?".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
-            elif "play" in text:
+            elif " play" in text:
                 print(">>/play")
                 play()
                 res_message = "Music is playing, <@{}>!".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
-            elif "next" in text:
+            elif " next" in text:
                 print(">>/next")
                 next()
                 res_message = "Next song, <@{}>!".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
-            elif "clear" in text:
+            elif " clear" in text:
                 print(">>/clear")
                 clear()
                 res_message = "Stop, Playlist is clean, <@{}>!".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
-            elif "pause" in text:
+            elif " pause" in text:
                 print(">>/pause")
                 pause()
                 res_message = "Music paused, <@{}>!".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
-            elif "https://www.youtube.com/watch?v=" in text:
-                begin = text.index(" <")
-                begin = begin + 2
-                url = text[begin:]
-                end = url.index(">")
-                url = url[0: end]
-                print(">>/youtube ", begin, text, end, url)
+            elif "https://www.youtube.com/watch?v=" or "https://youtu.be/" in text:
+                url = utils.validateYTUrl(text)
                 addingResult = addMusic(url)
                 match addingResult:
                     case SongAddingState.Success:
