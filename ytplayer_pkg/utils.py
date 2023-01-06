@@ -6,10 +6,35 @@ max_duration_time = datetime.strptime(max_duration_time_str, TIME_FORMAT)
 min_duration_time_str = "00:01:00"
 min_duration_time = datetime.strptime(min_duration_time_str, TIME_FORMAT)
 
+min_vol = 10
+max_vol = 80
+
 def checkDuration(yt_vid):
     vid_duration = datetime.strptime(yt_vid.duration, TIME_FORMAT)
     return vid_duration < max_duration_time and vid_duration >= min_duration_time
 
+def getVolumnFromSlack(text):
+    begin = text.index(" <vol ")
+    begin = begin + 6
+    volStr = text[begin:]
+    end = volStr.index(">")
+    volStr = volStr[0: end]
+    volStr = text[begin:]
+    return validateVolumn(volStr)
+        
+def validateVolumn(volStr):
+    vol = min_vol
+    try:
+      vol = volStr
+    except:
+      vol = min_vol
+
+    if vol < min_vol:
+        vol = min_vol
+    elif vol > max_vol:
+        vol = max_vol
+    return vol
+    
 def validateYTUrl(text):
     begin = text.index(" <")
     begin = begin + 2
