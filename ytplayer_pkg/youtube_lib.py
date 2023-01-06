@@ -28,7 +28,8 @@ class YouTubeVideo():
         video = pafy.new(url)
         titl = video.title
         url = url
-        str_u = video.getbest().url
+        # str_u = video.getbest().url
+        str_u = video.getbestaudio().url
         dur = video.duration
 
         return YouTubeVideo(titl, url, str_u, dur)
