@@ -155,14 +155,14 @@ def create_app():
         # Check overflow
         if ytObjCnt >= PLAY_LIST_LENGTH:
             print(">>>OverFlow!")
-            return False
+            return SongAddingState.Fail_Overflow
 
         # Check duplicate
         for item in playlist:
             if urlStr == item.url:
                 print(">>>Duplicate!")
-                return False
-        return True
+                return SongAddingState.Fail_Duplicate
+        return SongAddingState.Success
 
     def updatePlayList():
         ytStr = jsonpickle.encode(playlist, unpicklable=False)
@@ -192,7 +192,8 @@ def create_app():
         if utils.checkDuration(yt_vid) == False:
             return SongAddingState.Fail_Duration
         
-        if checkValidYT(url):
+        state = checkValidYT(url)
+        if state == SongAddingState.Success:
             try:
                 playlist.append(yt_vid)
                 player.enqueue(yt_vid)
@@ -201,7 +202,7 @@ def create_app():
                 print(f"Unexpected {err=}, {type(err)=}")
                 return SongAddingState.Fail_Exception
         else:
-            return SongAddingState.Fail_Url_Invalid
+            return state
 
     @app.route("/", methods=["GET", "POST"])
     def hello():
