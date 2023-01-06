@@ -36,7 +36,7 @@ slack.send(text="Hello, world.")
 SLACK_VERIFICATION_TOKEN = ""
 SLACK_BOT_TOKEN = ""
 SLACK_SIGNING_SECRET = ""
-PLAY_LIST_LENGTH = 6
+PLAY_LIST_LENGTH = 20
 
 try:
     SLACK_VERIFICATION_TOKEN = os.environ["SLACK_VERIFICATION_TOKEN"]
@@ -99,6 +99,10 @@ def create_app():
                 play()
                 res_message = "Music is playing, <@{}>!".format(message["user"])
                 send_survey(message["user"], message["channel"], res_message)
+            elif " list" in text:
+                print(">>/list")
+                res_message = utils.getPlaylistStr(playlist)
+                send_survey(message["user"], message["channel"], res_message)
             elif " next" in text:
                 print(">>/next")
                 next()
@@ -117,6 +121,7 @@ def create_app():
             elif "https://www.youtube.com/watch?v=" or "https://youtu.be/" in text:
                 url = utils.validateYTUrl(text)
                 addingResult = addMusic(url)
+                res_message = "<@{}>, something went wrong, cannot add your song, please contact your admin!".format(message["user"])
                 match addingResult:
                     case SongAddingState.Success:
                         res_message = "Song added, <@{}>!".format(message["user"])
