@@ -20,7 +20,7 @@ def getVolumnFromSlack(text):
     # end = volStr.index(">")
     # volStr = volStr[0: end]
     # volStr = text[begin:]
-    return validateVolumn(volStr)
+    return validateVolumn(int(volStr))
         
 def validateVolumn(volStr):
     vol = min_vol
