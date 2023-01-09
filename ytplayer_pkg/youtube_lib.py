@@ -2,12 +2,13 @@ import sys, vlc, pafy #https://github.com/mps-youtube/pafy
 import json
 
 class YouTubeVideo():
-    def __init__(self, name = '', url = '', stream_url = '', duration = '', owner = 'anonymous'):
+    def __init__(self, name = '', url = '', stream_url = '', duration = '', userId = '', owner = 'anonymous'):
         self.name = name
         self.url = url
         self.stream_url = stream_url
         self.duration = duration
         self.owner = owner
+        self.userId = userId
 
     def to_JSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)#, indent=2)
@@ -24,7 +25,7 @@ class YouTubeVideo():
         return YouTubeVideo(titl, url, str_u, dur, ownr)
 
     @staticmethod
-    def get_instance(url):
+    def get_instance(url, userId):
         video = pafy.new(url)
         titl = video.title
         url = url
@@ -32,7 +33,7 @@ class YouTubeVideo():
         str_u = video.getbestaudio().url
         dur = video.duration
 
-        return YouTubeVideo(titl, url, str_u, dur)
+        return YouTubeVideo(titl, url, str_u, dur, userId)
 
 
 class YouTubePlayer:

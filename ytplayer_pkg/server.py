@@ -16,6 +16,7 @@ import time
 import jsonpickle
 from YoutubeObj import YoutubeObj
 import utils
+import sqlite
 from yt_enum import SongAddingState
 
 # os.add_dll_directory(os.getcwd())
@@ -115,7 +116,8 @@ def create_app():
             elif " next" in text:
                 print(">>/next")
                 next()
-                res_message = "Next song, <@{}>!".format(message["user"])
+                songStr = utils.getSongStr(player.get_nowplaying())
+                res_message = "Next song, <@{}>!\n{}".format(message["user"], songStr)
                 send_survey(message["user"], message["channel"], res_message)
             elif " clear" in text:
                 print(">>/clear")
@@ -129,21 +131,22 @@ def create_app():
                 send_survey(message["user"], message["channel"], res_message)
             elif "https://www.youtube.com/watch?v=" or "https://youtu.be/" in text:
                 url = utils.validateYTUrl(text)
-                addingResult = addMusic(url)
-                res_message = "<@{}>, something went wrong, cannot add your song, please contact your admin!".format(message["user"])
+                user = message["user"]
+                addingResult = addMusic(url, "<@{}>".format(user))
+                res_message = "<@{}>, something went wrong, cannot add your song, please contact your Administrator!".format(user)
                 match addingResult:
                     case SongAddingState.Success:
-                        res_message = "Song added, <@{}>!".format(message["user"])
+                        res_message = "Song added, <@{}>!".format(user)
                     case SongAddingState.Fail_Duration:
-                        res_message = "<@{}>, Your song's duartion is not good, we can not add it!".format(message["user"])
+                        res_message = "<@{}>, Your song's duration is not good, we can not add it!".format(user)
                     case SongAddingState.Fail_Exception:
-                        res_message = "<@{}>, Add fail, please contact with your Administrator!".format(message["user"])
+                        res_message = "<@{}>, Add fail, please contact with your Administrator!".format(user)
                     case SongAddingState.Fail_Url_Invalid:
-                        res_message = "<@{}>, Add fail, Url not valid!".format(message["user"])
-                send_survey(message["user"], message["channel"], res_message)
+                        res_message = "<@{}>, Add fail, Url not valid!".format(user)
+                send_survey(user, message["channel"], res_message)
             else:
                 res_message = "Pardon, I don't understand you."
-                send_survey(message["user"], message["channel"], res_message)
+                send_survey(user, message["channel"], res_message)
 
     #     # ------------------------------------------------------------------------------
 
@@ -195,8 +198,8 @@ def create_app():
             print("An exception occurred")
         return ytObject
     
-    def addMusic(url):
-        yt_vid = YouTubeVideo.get_instance(url)
+    def addMusic(url, userId):
+        yt_vid = YouTubeVideo.get_instance(url, userId)
         # Check duration
         if utils.checkDuration(yt_vid) == False:
             return SongAddingState.Fail_Duration
@@ -206,6 +209,7 @@ def create_app():
             try:
                 playlist.append(yt_vid)
                 player.enqueue(yt_vid)
+                sqlite.savePlaylist(playlist)
                 return SongAddingState.Success
             except Exception as err:
                 print(f"Unexpected {err=}, {type(err)=}")
@@ -252,7 +256,7 @@ def create_app():
         if "url" in req_data:
             url = req_data["url"]
             
-            addingResult = addMusic(url)
+            addingResult = addMusic(url, 'Administrator')
             match addingResult:
                 case SongAddingState.Success:
                     return "<h1 style='color:blue'>POST: add!</h1>"
@@ -293,10 +297,18 @@ def create_app():
         else:
             return "<h1 style='color:Orange'>End of list!</h1>"
 
+    isBackup = True
+    answer = input("Do you want to load playlist? (y/n)")
+    isBackup = answer.__eq__('y')
+    print(answer, " ", isBackup)
+    if isBackup:
+        sqlite.getPlaylist()
+    
     return app
 
 
 def __init__(self, player, playlist):
+    print(">>>Init")
     self.player = player
     self.playlist = playlist
     if len(self.playlist) > 0:
@@ -306,5 +318,6 @@ def __init__(self, player, playlist):
 
 
 if __name__ == "__main__":
+    print(">>>__main__")
     app = create_app()
     app.run(host="0.0.0.0", port="80")
