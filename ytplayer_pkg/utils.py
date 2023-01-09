@@ -14,12 +14,12 @@ def checkDuration(yt_vid):
     return vid_duration < max_duration_time and vid_duration >= min_duration_time
 
 def getVolumnFromSlack(text):
-    begin = text.index(" <vol ")
-    begin = begin + 6
+    begin = text.index(" vol ")
+    begin = begin + 5
     volStr = text[begin:]
-    end = volStr.index(">")
-    volStr = volStr[0: end]
-    volStr = text[begin:]
+    # end = volStr.index(">")
+    # volStr = volStr[0: end]
+    # volStr = text[begin:]
     return validateVolumn(volStr)
         
 def validateVolumn(volStr):
