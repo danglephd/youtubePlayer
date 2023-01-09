@@ -107,6 +107,9 @@ def create_app():
                 send_survey(message["user"], message["channel"], res_message)
             elif " list" in text:
                 print(">>/list")
+                # First need to udpate playlist
+                updatePlayList()
+                # Sencond playlist to string
                 res_message = utils.getPlaylistStr(playlist)
                 send_survey(message["user"], message["channel"], res_message)
             elif " next" in text:
