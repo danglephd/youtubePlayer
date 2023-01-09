@@ -129,21 +129,22 @@ def create_app():
                 send_survey(message["user"], message["channel"], res_message)
             elif "https://www.youtube.com/watch?v=" or "https://youtu.be/" in text:
                 url = utils.validateYTUrl(text)
-                addingResult = addMusic(url)
-                res_message = "<@{}>, something went wrong, cannot add your song, please contact your admin!".format(message["user"])
+                user = message["user"]
+                addingResult = addMusic(url, "<@{}>".format(user))
+                res_message = "<@{}>, something went wrong, cannot add your song, please contact your Administrator!".format(user)
                 match addingResult:
                     case SongAddingState.Success:
-                        res_message = "Song added, <@{}>!".format(message["user"])
+                        res_message = "Song added, <@{}>!".format(user)
                     case SongAddingState.Fail_Duration:
-                        res_message = "<@{}>, Your song's duartion is not good, we can not add it!".format(message["user"])
+                        res_message = "<@{}>, Your song's duration is not good, we can not add it!".format(user)
                     case SongAddingState.Fail_Exception:
-                        res_message = "<@{}>, Add fail, please contact with your Administrator!".format(message["user"])
+                        res_message = "<@{}>, Add fail, please contact with your Administrator!".format(user)
                     case SongAddingState.Fail_Url_Invalid:
-                        res_message = "<@{}>, Add fail, Url not valid!".format(message["user"])
-                send_survey(message["user"], message["channel"], res_message)
+                        res_message = "<@{}>, Add fail, Url not valid!".format(user)
+                send_survey(user, message["channel"], res_message)
             else:
                 res_message = "Pardon, I don't understand you."
-                send_survey(message["user"], message["channel"], res_message)
+                send_survey(user, message["channel"], res_message)
 
     #     # ------------------------------------------------------------------------------
 
@@ -195,8 +196,8 @@ def create_app():
             print("An exception occurred")
         return ytObject
     
-    def addMusic(url):
-        yt_vid = YouTubeVideo.get_instance(url)
+    def addMusic(url, userId):
+        yt_vid = YouTubeVideo.get_instance(url, userId)
         # Check duration
         if utils.checkDuration(yt_vid) == False:
             return SongAddingState.Fail_Duration
@@ -252,7 +253,7 @@ def create_app():
         if "url" in req_data:
             url = req_data["url"]
             
-            addingResult = addMusic(url)
+            addingResult = addMusic(url, 'Administrator')
             match addingResult:
                 case SongAddingState.Success:
                     return "<h1 style='color:blue'>POST: add!</h1>"
