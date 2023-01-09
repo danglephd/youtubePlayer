@@ -218,9 +218,14 @@ def create_app():
     def talk():
         req_data = request.get_json()
         # ---to channel, use: !channel
-        if "text" in req_data:
-            slack.send(text=req_data["text"])
-        return "<h1 style='color:blue'>Talked to Slack!</h1>"
+        print('>>>Talk', req_data)
+        if "channel" in req_data:
+            channel = req_data["channel"]
+            if "text" in req_data:
+                text=req_data["text"]
+                send_survey("", channel, text)
+                return "<h1 style='color:blue'>Talked to Slack!</h1>"
+        return "<h1 style='color:red'>Say nothing!</h1>"
 
     @app.route("/list", methods=["GET"])
     def list():
