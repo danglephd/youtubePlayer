@@ -88,15 +88,22 @@ http://localhost:8080/
 | /next | Play next | | GET |
 | /pause | Pause music | | GET |
 
-####Running the Server (on local)
-Just run the server script, assigning a hostname and a port to it.
+####Running the Server on Windows(dev)
+1. Point to ytplayer_pkg folder  
+2. Run the server script, assigning a hostname and a port to it.
+
 ```bash
 usage: 
-$ Flask run
-
-example: 
-$ Flask run localhost 9999
+$ python -m flask --app server run --host=0.0.0.0 --port=80
 ```
+
+3. Run ngrok:
+4. On Ngrok window:
+```
+$ ngrok.exe http ${PORT}
+```
+5. Update link Request URL on: https://api.slack.com/apps/{APP-ID}/event-subscriptions?
+
 
 ## Error
 ### Server :
