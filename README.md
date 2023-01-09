@@ -103,6 +103,7 @@ $ python -m flask --app server run --host=0.0.0.0 --port=80
 $ ngrok.exe http ${PORT}
 ```
 5. Update link Request URL on: https://api.slack.com/apps/{APP-ID}/event-subscriptions?
+6. Save change, and you ready to mess with your DJ
 
 
 ## Error
