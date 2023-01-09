@@ -88,7 +88,7 @@ http://localhost:8080/
 | /next | Play next | | GET |
 | /pause | Pause music | | GET |
 
-####Running the Server on Windows(dev)
+## Running the Server on Windows(dev)
 1. Point to ytplayer_pkg folder  
 2. Run the server script, assigning a hostname and a port to it.
 
@@ -102,7 +102,7 @@ $ python -m flask --app server run --host=0.0.0.0 --port=80
 ```
 $ ngrok.exe http ${PORT}
 ```
-5. Update link Request URL on: https://api.slack.com/apps/{APP-ID}/event-subscriptions?
+5. Update link Request URL on: https://api.slack.com/apps/{APP-ID}/event-subscriptions? with {APP-ID} is your Slack App ID
 6. Save change, and you ready to mess with your DJ
 
 
