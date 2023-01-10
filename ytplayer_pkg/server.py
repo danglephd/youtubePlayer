@@ -38,6 +38,7 @@ SLACK_VERIFICATION_TOKEN = ""
 SLACK_BOT_TOKEN = ""
 SLACK_SIGNING_SECRET = ""
 PLAY_LIST_LENGTH = 20
+CHANNEL_ID = ""
 
 try:
     SLACK_VERIFICATION_TOKEN = os.environ["SLACK_VERIFICATION_TOKEN"]
@@ -45,6 +46,7 @@ try:
     # Create a SlackClient for your bot to use for Web API requests
     SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
     SLACK_SIGNING_SECRET = os.environ["SLACK_SIGNING_SECRET"]
+    CHANNEL_ID = os.environ["CHANNEL_ID"]
     slack_client = WebClient(SLACK_BOT_TOKEN)
 except KeyError:
     print("Environment variable does not exist", KeyError)
@@ -60,6 +62,7 @@ def send_survey(user, channel, text):
     slack_client.api_call(
         api_method="chat.postMessage", json={"channel": channel, "text": text}
     )
+    
 
 
 # ------------------------------------------------------------------------------
@@ -68,6 +71,7 @@ def send_survey(user, channel, text):
 def create_app():
     app = Flask(__name__)
     slack_events_adapter = SlackEventAdapter(SLACK_SIGNING_SECRET, "/slack/events", app)
+    
     print("Server start...")
 
     @app.route("/slack/events", methods=["POST"])
@@ -220,6 +224,13 @@ def create_app():
         else:
             return state
 
+    def handleCallbackEvent(event):
+        print(">>Handle next song:", event.type, event.u)
+        # Sencond playlist to string
+        songStr = utils.getSongStr(player.get_nowplaying())
+        res_message = "Next song: {}".format(songStr)
+        send_survey("", CHANNEL_ID, res_message)
+        
     @app.route("/", methods=["GET", "POST"])
     def hello():
         return "Hello, World!"
@@ -320,6 +331,8 @@ def create_app():
             return "<h1 style='color:blue'>Next!</h1>"
         else:
             return "<h1 style='color:Orange'>End of list!</h1>"
+    
+    player.addEvent(handleCallbackEvent)
     
     return app
 
