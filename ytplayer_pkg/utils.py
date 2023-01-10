@@ -1,4 +1,5 @@
 from datetime import datetime
+import jsonpickle
 
 TIME_FORMAT = "%H:%M:%S"
 max_duration_time_str = "00:06:00"
@@ -49,11 +50,12 @@ def validateYTUrl(text):
         url = url[0:end]
     return url
 
-def getSongStr(youtubeSong):
-    print('>>>>', youtubeSong)
+def getSongStr(ytStr):
+    print('>>>>', ytStr)
+    ytObject = jsonpickle.decode(ytStr)
+    
     return "*<{}|{}>* - _{}_ - Added by: {}".format(
-        youtubeSong[4], youtubeSong[1], youtubeSong[0], youtubeSong[5]
-        # youtubeSong["url"], youtubeSong["name"], youtubeSong["duration"], youtubeSong["userId"]
+        ytObject["url"], ytObject["name"], ytObject["duration"], ytObject["userId"]
     )
 
 def getPlaylistStr(playlist):
