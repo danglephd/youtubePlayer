@@ -280,6 +280,10 @@ def create_app():
                     return "<h1 style='color:red'>Exception throw, add fail!</h1>"
                 case SongAddingState.Fail_Url_Invalid:
                     return "<h1 style='color:red'>Url not valid, add fail!</h1>"
+                case SongAddingState.Fail_Duplicate:
+                    return "<h1 style='color:red'>Song is duplicate, add fail!</h1>"
+                case SongAddingState.Fail_Overflow:
+                    return "<h1 style='color:red'>Overflow, add fail!</h1>"
         else:
             return "<h1 style='color:red'>No url, add fail!</h1>"
 
