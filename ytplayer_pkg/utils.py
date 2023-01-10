@@ -50,12 +50,18 @@ def validateYTUrl(text):
         url = url[0:end]
     return url
 
-def getSongStr(ytStr):
+def getSongStrFromStr(ytStr):
     print('>>>>', ytStr)
     ytObject = jsonpickle.decode(ytStr)
     
     return "*<{}|{}>* - _{}_ - Added by: {}".format(
+        # ytObject.url, ytObject.name, ytObject.duration, ytObject.userId
         ytObject["url"], ytObject["name"], ytObject["duration"], ytObject["userId"]
+    )
+    
+def getSongStrFromObject(ytStr):
+    return "*<{}|{}>* - _{}_ - Added by: {}".format(
+        ytStr.url, ytStr.name, ytStr.duration, ytStr.userId
     )
 
 def getPlaylistStr(playlist):
@@ -63,7 +69,7 @@ def getPlaylistStr(playlist):
     index = 0
     for item in playlist:
         index += 1
-        songStr = getSongStr(item)
+        songStr = getSongStrFromObject(item)
         res_message += "\n {}. {}".format(index, songStr)
         # res_message += '\n {}. *<{}|{}>* - _{}_ - Added by: {}'.format(index, item.url, item.name, item.duration, item.userId)
     return res_message
