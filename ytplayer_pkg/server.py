@@ -120,7 +120,7 @@ def create_app():
             elif " next" in text:
                 print(">>/next")
                 next()
-                songStr = utils.getSongStr(player.get_nowplaying())
+                songStr = utils.getSongStrFromStr(player.get_nowplaying())
                 res_message = "Next song, <@{}>!\n{}".format(message["user"], songStr)
                 send_survey(message["user"], message["channel"], res_message)
             elif " clear" in text:
@@ -227,7 +227,7 @@ def create_app():
     def handleCallbackEvent(event):
         print(">>Handle next song:", event.type, event.u)
         # Sencond playlist to string
-        songStr = utils.getSongStr(player.get_nowplaying())
+        songStr = utils.getSongStrFromStr(player.get_nowplaying())
         res_message = "Next song: {}".format(songStr)
         send_survey("", CHANNEL_ID, res_message)
         
