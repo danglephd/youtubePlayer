@@ -35,8 +35,11 @@ class YouTubeVideo():
 
         return YouTubeVideo(titl, url, str_u, dur, userId)
 
+def cb(event):
+    print("cb:", event.type, event.u)
 
 class YouTubePlayer:
+        
     def __init__(self):
         # --no-xlib --no-stats --no-video
         self.instance = vlc.Instance("--no-video")
@@ -46,6 +49,7 @@ class YouTubePlayer:
         self.list_player.set_media_player(self.player)
         self.list_player.set_media_list(self.playlist)
         self.event_manager = self.list_player.event_manager()
+        self.event_manager.event_attach(vlc.EventType.MediaListPlayerNextItemSet, cb)
 
 
     def clear_playlist(self):
@@ -56,7 +60,9 @@ class YouTubePlayer:
         self.list_player.set_media_player(self.player)
         self.list_player.set_media_list(self.playlist)
         self.event_manager = self.list_player.event_manager()
+        self.event_manager.event_attach(vlc.EventType.MediaListPlayerNextItemSet, cb)
         return
+    
     def play(self):
         self.list_player.play()
         return
@@ -67,6 +73,7 @@ class YouTubePlayer:
         self.list_player.stop()
         return
     def next(self):
+        print('>>>>next')
         self.list_player.next()
 
     def is_playing(self):
