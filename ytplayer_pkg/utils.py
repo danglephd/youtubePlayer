@@ -48,8 +48,15 @@ def validateYTUrl(text):
         url = url[0: end]
     return url
     
+def getSongStr(youtubeSong):
+    return '*<{}|{}>* - _{}_ - Added by: {}'.format(youtubeSong.url, youtubeSong.name, youtubeSong.duration, youtubeSong.userId)
+
 def getPlaylistStr(playlist):
     res_message = "Your playlist:"
+    index = 0
     for item in playlist:
-        res_message += '\n - *{}* - _{}_ - {}'.format(item.name, item.duration, item.url)
+        index += 1
+        songStr = getSongStr(item)
+        res_message += '\n {}. {}'.format(songStr)
+        # res_message += '\n {}. *<{}|{}>* - _{}_ - Added by: {}'.format(index, item.url, item.name, item.duration, item.userId)
     return res_message
