@@ -50,8 +50,10 @@ def validateYTUrl(text):
     return url
 
 def getSongStr(youtubeSong):
+    print('>>>>', youtubeSong)
     return "*<{}|{}>* - _{}_ - Added by: {}".format(
-        youtubeSong.url, youtubeSong.name, youtubeSong.duration, youtubeSong.userId
+        youtubeSong[4], youtubeSong[1], youtubeSong[0], youtubeSong[5]
+        # youtubeSong["url"], youtubeSong["name"], youtubeSong["duration"], youtubeSong["userId"]
     )
 
 def getPlaylistStr(playlist):
