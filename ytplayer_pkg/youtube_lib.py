@@ -49,7 +49,7 @@ class YouTubePlayer:
         self.list_player.set_media_player(self.player)
         self.list_player.set_media_list(self.playlist)
         self.event_manager = self.list_player.event_manager()
-        self.event_manager.event_attach(vlc.EventType.MediaListPlayerNextItemSet, cb)
+        # self.event_manager.event_attach(vlc.EventType.MediaListPlayerNextItemSet, cb)
 
 
     def clear_playlist(self):
@@ -60,7 +60,7 @@ class YouTubePlayer:
         self.list_player.set_media_player(self.player)
         self.list_player.set_media_list(self.playlist)
         self.event_manager = self.list_player.event_manager()
-        self.event_manager.event_attach(vlc.EventType.MediaListPlayerNextItemSet, cb)
+        # self.event_manager.event_attach(vlc.EventType.MediaListPlayerNextItemSet, cb)
         return
     
     def play(self):
@@ -75,6 +75,8 @@ class YouTubePlayer:
     def next(self):
         print('>>>>next')
         self.list_player.next()
+    def addEvent(self, event):
+        self.event_manager.event_attach(vlc.EventType.MediaListPlayerNextItemSet, event)
 
     def is_playing(self):
         return self.list_player.is_playing()
