@@ -46,15 +46,23 @@ def getPlaylist():
         conn = sqlite3.connect('test.db')
         print("Opened database successfully")
 
-        cursor = conn.execute("SELECT NAME, URL, USERID from PLAYLIST")
+        cursor = conn.execute("SELECT ID, NAME, URL, USERID from PLAYLIST")
+        data = []
         for row in cursor:
-            print("NAME = ", row[0])
-            print("URL = ", row[1])
-            print("USERID = ", row[2], "\n")
+            print("NAME = ", row[1])
+            print("URL = ", row[2])
+            print("USERID = ", row[3], "\n")
+            data.append(YT_Object(row[0], row[1], row[2], row[3]))
 
         print("Operation done successfully")
         conn.close()
-        return cursor
+        return data
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         
+class YT_Object:
+    def __init__(self, id, name, url, userid):
+        self.name = name
+        self.url = url
+        self.userid = userid
+        self.id = id

@@ -38,6 +38,7 @@ SLACK_VERIFICATION_TOKEN = ""
 SLACK_BOT_TOKEN = ""
 SLACK_SIGNING_SECRET = ""
 PLAY_LIST_LENGTH = 20
+CHANNEL_ID = ""
 
 try:
     SLACK_VERIFICATION_TOKEN = os.environ["SLACK_VERIFICATION_TOKEN"]
@@ -45,6 +46,7 @@ try:
     # Create a SlackClient for your bot to use for Web API requests
     SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
     SLACK_SIGNING_SECRET = os.environ["SLACK_SIGNING_SECRET"]
+    CHANNEL_ID = os.environ["CHANNEL_ID"]
     slack_client = WebClient(SLACK_BOT_TOKEN)
 except KeyError:
     print("Environment variable does not exist", KeyError)
@@ -60,6 +62,7 @@ def send_survey(user, channel, text):
     slack_client.api_call(
         api_method="chat.postMessage", json={"channel": channel, "text": text}
     )
+    
 
 
 # ------------------------------------------------------------------------------
@@ -68,6 +71,7 @@ def send_survey(user, channel, text):
 def create_app():
     app = Flask(__name__)
     slack_events_adapter = SlackEventAdapter(SLACK_SIGNING_SECRET, "/slack/events", app)
+    
     print("Server start...")
 
     @app.route("/slack/events", methods=["POST"])
@@ -116,7 +120,7 @@ def create_app():
             elif " next" in text:
                 print(">>/next")
                 next()
-                songStr = utils.getSongStr(player.get_nowplaying())
+                songStr = utils.getSongStrFromStr(player.get_nowplaying())
                 res_message = "Next song, <@{}>!\n{}".format(message["user"], songStr)
                 send_survey(message["user"], message["channel"], res_message)
             elif " clear" in text:
@@ -141,8 +145,12 @@ def create_app():
                         res_message = "<@{}>, Your song's duration is not good, we can not add it!".format(user)
                     case SongAddingState.Fail_Exception:
                         res_message = "<@{}>, Add fail, please contact with your Administrator!".format(user)
+                    case SongAddingState.Fail_Duplicate:
+                        res_message = "<@{}>, Add fail, song is duplicate!".format(user)
                     case SongAddingState.Fail_Url_Invalid:
                         res_message = "<@{}>, Add fail, Url not valid!".format(user)
+                    case SongAddingState.Fail_Overflow:
+                        res_message = "<@{}>, Add fail, Overflow!".format(user)
                 send_survey(user, message["channel"], res_message)
             else:
                 res_message = "Pardon, I don't understand you."
@@ -194,8 +202,8 @@ def create_app():
                 if ytObjCnt <= 0:
                     print("Lengh is less than 0!!")
                     break
-        except:
-            print("An exception occurred")
+        except Exception as err:
+            print(f"Unexpected {err=}, {type(err)=}")
         return ytObject
     
     def addMusic(url, userId):
@@ -209,7 +217,6 @@ def create_app():
             try:
                 playlist.append(yt_vid)
                 player.enqueue(yt_vid)
-                sqlite.savePlaylist(playlist)
                 return SongAddingState.Success
             except Exception as err:
                 print(f"Unexpected {err=}, {type(err)=}")
@@ -217,6 +224,13 @@ def create_app():
         else:
             return state
 
+    def handleCallbackEvent(event):
+        print(">>Handle next song:", event.type, event.u)
+        # Sencond playlist to string
+        songStr = utils.getSongStrFromStr(player.get_nowplaying())
+        res_message = "Next song: {}".format(songStr)
+        send_survey("", CHANNEL_ID, res_message)
+        
     @app.route("/", methods=["GET", "POST"])
     def hello():
         return "Hello, World!"
@@ -266,9 +280,34 @@ def create_app():
                     return "<h1 style='color:red'>Exception throw, add fail!</h1>"
                 case SongAddingState.Fail_Url_Invalid:
                     return "<h1 style='color:red'>Url not valid, add fail!</h1>"
+                case SongAddingState.Fail_Duplicate:
+                    return "<h1 style='color:red'>Song is duplicate, add fail!</h1>"
+                case SongAddingState.Fail_Overflow:
+                    return "<h1 style='color:red'>Overflow, add fail!</h1>"
         else:
             return "<h1 style='color:red'>No url, add fail!</h1>"
 
+    @app.route("/save", methods=["GET"])
+    def save():
+        updatePlayList()
+        ytObjCnt = len(playlist)
+        if ytObjCnt > 0:
+            sqlite.savePlaylist(playlist)
+            return "<h1 style='color:green'>Saved!</h1>"
+        else:
+            return "<h1 style='color:blue'>Playlist empty, nothing to Saved</h1>"
+    
+    @app.route("/load", methods=["GET"])
+    def load():
+        listYT_object = sqlite.getPlaylist()
+        ytObjCnt = len(listYT_object)
+        if ytObjCnt > 0:
+            for item in listYT_object:
+                addingResult = addMusic(item.url, item.userid)
+            return list()
+        else:
+            return "<h1 style='color:blue'>Playlist empty, nothing to load.</h1>"
+    
     @app.route("/play", methods=["POST"])
     def play():
         player.play()
@@ -296,13 +335,8 @@ def create_app():
             return "<h1 style='color:blue'>Next!</h1>"
         else:
             return "<h1 style='color:Orange'>End of list!</h1>"
-
-    isBackup = True
-    answer = input("Do you want to load playlist? (y/n)")
-    isBackup = answer.__eq__('y')
-    print(answer, " ", isBackup)
-    if isBackup:
-        sqlite.getPlaylist()
+    
+    player.addEvent(handleCallbackEvent)
     
     return app
 

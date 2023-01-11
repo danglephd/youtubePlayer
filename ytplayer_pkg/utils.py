@@ -1,4 +1,5 @@
 from datetime import datetime
+import jsonpickle
 
 TIME_FORMAT = "%H:%M:%S"
 max_duration_time_str = "00:06:00"
@@ -21,42 +22,54 @@ def getVolumnFromSlack(text):
     # volStr = volStr[0: end]
     # volStr = text[begin:]
     return validateVolumn(int(volStr))
-        
+
 def validateVolumn(volStr):
     vol = min_vol
     try:
-      vol = volStr
-    except:
-      vol = min_vol
+        vol = volStr
+    except Exception as err:
+        print(f"Unexpected {err=}, {type(err)=}")
+        vol = min_vol
 
     if vol < min_vol:
         vol = min_vol
     elif vol > max_vol:
         vol = max_vol
     return vol
-    
+
 def validateYTUrl(text):
     begin = text.index(" <")
     begin = begin + 2
     url = text[begin:]
     end = url.index(">")
-    url = url[0: end]
+    url = url[0:end]
     print(">>/youtube ", begin, text, end, url)
-    # Check "|" in url 
+    # Check "|" in url
     if "|" in url:
         end = url.index("|")
-        url = url[0: end]
+        url = url[0:end]
     return url
+
+def getSongStrFromStr(ytStr):
+    print('>>>>', ytStr)
+    ytObject = jsonpickle.decode(ytStr)
     
-def getSongStr(youtubeSong):
-    return '*<{}|{}>* - _{}_ - Added by: {}'.format(youtubeSong.url, youtubeSong.name, youtubeSong.duration, youtubeSong.userId)
+    return "*<{}|{}>* - _{}_ - Added by: {}".format(
+        # ytObject.url, ytObject.name, ytObject.duration, ytObject.userId
+        ytObject["url"], ytObject["name"], ytObject["duration"], ytObject["userId"]
+    )
+    
+def getSongStrFromObject(ytStr):
+    return "*<{}|{}>* - _{}_ - Added by: {}".format(
+        ytStr.url, ytStr.name, ytStr.duration, ytStr.userId
+    )
 
 def getPlaylistStr(playlist):
     res_message = "Your playlist:"
     index = 0
     for item in playlist:
         index += 1
-        songStr = getSongStr(item)
-        res_message += '\n {}. {}'.format(songStr)
+        songStr = getSongStrFromObject(item)
+        res_message += "\n {}. {}".format(index, songStr)
         # res_message += '\n {}. *<{}|{}>* - _{}_ - Added by: {}'.format(index, item.url, item.name, item.duration, item.userId)
     return res_message
