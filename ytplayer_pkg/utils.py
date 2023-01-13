@@ -43,7 +43,7 @@ def validateYTUrl(text):
     url = text[begin:]
     end = url.index(">")
     url = url[0:end]
-    print(">>/youtube ", begin, text, end, url)
+    # print(">>/youtube ", begin, text, end, url)
     # Check "|" in url
     if "|" in url:
         end = url.index("|")
@@ -51,8 +51,8 @@ def validateYTUrl(text):
     return url
 
 def getSongStrFromStr(ytStr):
-    print('>>>>', ytStr)
     ytObject = jsonpickle.decode(ytStr)
+    print('>>>>Song: ', ytObject["name"], ytObject["url"])
     
     return "*<{}|{}>* - _{}_ - Added by: {}".format(
         # ytObject.url, ytObject.name, ytObject.duration, ytObject.userId

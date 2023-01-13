@@ -87,7 +87,7 @@ def create_app():
     @slack_events_adapter.on("app_mention")
     def handle_app_mention(event_data):
         message = event_data["event"]
-        print(">>app_mention...")
+        # print(">>app_mention...")
         
         #         # If the incoming message contains "hi", then respond with a "Hello" message
         if message.get("subtype") is None:
@@ -225,7 +225,7 @@ def create_app():
             return state
 
     def handleCallbackEvent(event):
-        print(">>Handle next song:", event.type, event.u)
+        print(">>Handle next song")
         # Sencond playlist to string
         media = player.get_nowplaying()
         if media == {}:
