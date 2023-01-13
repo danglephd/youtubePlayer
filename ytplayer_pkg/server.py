@@ -227,8 +227,13 @@ def create_app():
     def handleCallbackEvent(event):
         print(">>Handle next song:", event.type, event.u)
         # Sencond playlist to string
-        songStr = utils.getSongStrFromStr(player.get_nowplaying())
-        res_message = "Next song: {}".format(songStr)
+        media = player.get_nowplaying()
+        if media == {}:
+            clear()
+            res_message = "End of list. Should you please add more? :face_holding_back_tears: :face_holding_back_tears: :face_holding_back_tears:"
+        else:
+            songStr = utils.getSongStrFromStr(media)
+            res_message = "Next song: {}".format(songStr)
         send_survey("", CHANNEL_ID, res_message)
         
     @app.route("/", methods=["GET", "POST"])
