@@ -37,7 +37,7 @@ $ pip install jsonpickle
    3.1 go to Slack Event Subscriptions
    3.1.1 Enable Event 
    3.1.2 For Dev: need to enable ngrok to get https
-   3.1.3 Add Request URL from ngrok, Ex: https://3267-103-145-2-249.ap.ngrok.io//slack/events
+   3.1.3 Add Request URL from ngrok, Ex: https://3267-103-145-2-249.ap.ngrok.io/slack/events
    3.1.4 Subscribe to bot events
    3.2 go to Incoming Webhooks
    3.2.1 Activate Incoming Webhooks
@@ -45,8 +45,6 @@ $ pip install jsonpickle
    3.3 go to OAuth & Permissions
    3.3.1 Add OAuth Scope: chat:write:bot
    3.3.1 Reinstall app
-
-
 4. https://github.com/slackapi/python-slack-events-api
 
 ## Deploy on production:
@@ -138,3 +136,9 @@ $ ngrok.exe http ${PORT}
  * print
     >In Python 3.0
     The print statement has been replaced with a print() function
+
+
+Bug on 2023-03-21:
+- change port to 81. 
+- hide code on backend_youtube_dl 
+        # self._rating = self._ydl_info['average_rating']
