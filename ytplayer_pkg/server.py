@@ -146,7 +146,8 @@ def create_app():
                     case SongAddingState.Fail_Exception:
                         res_message = "<@{}>, Add fail, please contact with your Administrator!".format(user)
                     case SongAddingState.Fail_Duplicate:
-                        res_message = "<@{}>, Add fail, song is duplicate!".format(user)
+                        res_message = "."
+                        # res_message = "<@{}>, Add fail, song is duplicate!".format(user)
                     case SongAddingState.Fail_Url_Invalid:
                         res_message = "<@{}>, Add fail, Url not valid!".format(user)
                     case SongAddingState.Fail_Overflow:
@@ -228,12 +229,14 @@ def create_app():
         print(">>Handle next song")
         # Sencond playlist to string
         media = player.get_nowplaying()
+        print(">>", media)
         if media == {}:
             clear()
-            res_message = "End of list. Should you please add more? :face_holding_back_tears: :face_holding_back_tears: :face_holding_back_tears:"
+            res_message = ":busstop: End of list. Should you please add more? :face_holding_back_tears: :face_holding_back_tears: :face_holding_back_tears:"
         else:
             songStr = utils.getSongStrFromStr(media)
-            res_message = "Next song: {}".format(songStr)
+            res_message = ":musical_score: Next song: {}".format(songStr)
+        print(">>>>>>>>>", res_message)
         send_survey("", CHANNEL_ID, res_message)
         
     @app.route("/", methods=["GET", "POST"])
@@ -339,6 +342,7 @@ def create_app():
         if inx_begin != inx_after:
             return "<h1 style='color:blue'>Next!</h1>"
         else:
+            clear()
             return "<h1 style='color:Orange'>End of list!</h1>"
     
     player.addEvent(handleCallbackEvent)
