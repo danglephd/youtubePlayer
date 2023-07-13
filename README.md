@@ -114,6 +114,8 @@ $ ngrok.exe http ${PORT}
     
     > Solved 1: Copy plugins,libvlc.dll and libvlccore.dll to C:\Windows\System32
 
+    > Solved 2: https://stackoverflow.com/questions/43690070/cant-import-vlc-module-into-python-not-a-valid-win32-application-error
+
 
  * No module named 'SocketServer'
  
