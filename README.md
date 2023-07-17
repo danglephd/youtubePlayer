@@ -11,7 +11,7 @@ It inherited from the final project for the class *EE810 - Engineering Programmi
 ## Features
 * Play youtube link with Ad-Free
 * Multiclient - let everyone in the network add their music to your play-list
-* Play-list Management - add, pause and skip any music on your play-list
+* Play-list Management - add, pause and skip any song on your play-list
 
 
 ## Usage
