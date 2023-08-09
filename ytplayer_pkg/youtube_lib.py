@@ -31,6 +31,7 @@ class YouTubeVideo():
         url = url
         # str_u = video.getbest().url
         str_u = video.getbestaudio().url
+        # str_v = video.getbestvideo().url
         dur = video.duration
 
         return YouTubeVideo(titl, url, str_u, dur, userId)
@@ -88,6 +89,9 @@ class YouTubePlayer:
     def enqueue(self, yt_vid):
         self.playlist.lock()
         media = self.instance.media_new(yt_vid.stream_url)
+        
+        # media.add_option(":network-caching=8000")
+
         media.parse()
         meta = vlc.Meta()
         media.set_meta(0, yt_vid.name)
